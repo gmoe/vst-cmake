@@ -45,12 +45,23 @@ set_target_properties(again PROPERTIES
   MACOSX_BUNDLE_COPYRIGHT "CompanyName © 2016"
 )
 
+# API fix for Linux builds
+if(UNIX AND NOT APPLE)
+  add_definitions( -D__cdecl= )
+endif()
+
+####################
+# Set Install Path #
+####################
+
 if(APPLE)
   install(TARGETS again
     DESTINATION "$ENV{HOME}/Library/Audio/Plug-Ins/VST"
   )
-endif()
-
-if(WIN32)
-  #Set Install Path
+elseif(WIN32)
+  # TODO: Add installation target for Windows
+elseif(UNIX AND NOT APPLE) #Linux
+  install(TARGETS again
+    DESTINATION "/usr/lib/lxvst"
+  )
 endif()
