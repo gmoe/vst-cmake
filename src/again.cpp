@@ -1,4 +1,3 @@
-
 #include <stdio.h>
 #include <string.h>
 
@@ -6,10 +5,8 @@
 #include "again.h"
 #endif
 
-
 AGainProgram::AGainProgram ()
 {
-	// default Program Values
 	fGain = 0.75;
 
 	strcpy (name, "Init");
@@ -17,9 +14,9 @@ AGainProgram::AGainProgram ()
 
 
 AGain::AGain (audioMasterCallback audioMaster)
-	: AudioEffectX (audioMaster, kNumPrograms, kNumParams)
+	: AudioEffectX (audioMaster, 1, kNumParams)
 {
-  programs = new AGainProgram[numPrograms];
+  programs = new AGainProgram[1];
 	fGain = 0.75;
 
 	if (programs) {
@@ -29,7 +26,7 @@ AGain::AGain (audioMasterCallback audioMaster)
 	setNumInputs (2);
 	setNumOutputs (2);
 
-  setUniqueID ('5864');
+  setUniqueID ('Gain');
 
   resume ();
 }
@@ -37,10 +34,6 @@ AGain::AGain (audioMasterCallback audioMaster)
 
 AGain::~AGain ()
 {
-	if(buffer) {
-		delete[] buffer;
-  }
-
 	if(programs) {
 		delete[] programs;
   }
@@ -71,7 +64,7 @@ void AGain::getProgramName (char *name)
 
 bool AGain::getProgramNameIndexed (VstInt32 category, VstInt32 index, char* text)
 {
-	if(index < kNumPrograms) {
+	if(index < numPrograms) {
 		strcpy(text, programs[index].name);
 		return true;
 	}

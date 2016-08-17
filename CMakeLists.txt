@@ -1,3 +1,7 @@
+###########################################
+# CMake Project Template for VST Plug-ins #
+###########################################
+
 project(AGain)
 cmake_minimum_required(VERSION 3.0.0)
 set(CMAKE_COLOR_MAKEFILE ON)
@@ -6,15 +10,24 @@ if(MSVC)
     add_definitions(/D _CRT_SECURE_NO_WARNINGS)
 endif()
 
+############################
+# API fix for Linux builds #
+############################
+
+if(UNIX AND NOT APPLE)
+  add_definitions( -D__cdecl= )
+endif()
+
+#################
+# Build plug-in #
+#################
+
 set(VSTSDK_PATH "/Applications/JUCE/VST3_SDK/" CACHE PATH "Path to VST SDK")
 set(VSTSDK_INCLUDE_DIR ${VSTSDK_PATH})
 set(VSTSDK_PLUGIN_SOURCE
-    ${VSTSDK_PATH}/public.sdk/source/vst2.x/audioeffectx.cpp
-    ${VSTSDK_PATH}/public.sdk/source/vst2.x/audioeffect.cpp
-    ${VSTSDK_PATH}/public.sdk/source/vst2.x/vstplugmain.cpp
-)
-
-set(VSTSDK_HOST_SOURCE
+  ${VSTSDK_PATH}/public.sdk/source/vst2.x/audioeffectx.cpp
+  ${VSTSDK_PATH}/public.sdk/source/vst2.x/audioeffect.cpp
+  ${VSTSDK_PATH}/public.sdk/source/vst2.x/vstplugmain.cpp
   ${VSTSDK_PATH}/pluginterfaces/vst2.x/aeffectx.h
 )
 
@@ -22,16 +35,19 @@ set(AGAIN_SOURCE
     src/again.cpp
     src/again.h
     src/againmain.cpp
-    resources/again.rc
-    resources/vstplug.def
+    #resources/again.rc
+    #resources/vstplug.def
     ${VSTSDK_PLUGIN_SOURCE}
-    ${VSTSDK_HOST_SOURCE}
 )
 
 add_library(again MODULE ${AGAIN_SOURCE})
 
 include_directories(${VSTSDK_INCLUDE_DIR})
 target_link_libraries(again ${VSTSDK_LIBRARIES})
+
+######################################
+# Set OSX-specific bundle properties #
+######################################
 
 set_target_properties(again PROPERTIES 
   BUNDLE true
@@ -45,11 +61,6 @@ set_target_properties(again PROPERTIES
   MACOSX_BUNDLE_COPYRIGHT "CompanyName © 2016"
 )
 
-# API fix for Linux builds
-if(UNIX AND NOT APPLE)
-  add_definitions( -D__cdecl= )
-endif()
-
 ####################
 # Set Install Path #
 ####################
@@ -59,7 +70,9 @@ if(APPLE)
     DESTINATION "$ENV{HOME}/Library/Audio/Plug-Ins/VST"
   )
 elseif(WIN32)
-  # TODO: Add installation target for Windows
+  install(TARGETS again
+    DESTINATION "/Program Files (x86)/Common Files/VST3/"
+  )
 elseif(UNIX AND NOT APPLE) #Linux
   install(TARGETS again
     DESTINATION "/usr/lib/lxvst"

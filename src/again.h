@@ -1,4 +1,3 @@
-
 #ifndef __again__
 #define __again__
 
@@ -6,10 +5,6 @@
 
 enum
 {
-	// Global
-	kNumPrograms = 16,
-
-	// Parameters Tags
 	kGain,
 
 	kNumParams
@@ -61,13 +56,7 @@ public:
 
 protected:
   AGainProgram* programs;
-	
-	float* buffer;
 	float fGain;
-	
-	long delay;
-	long size;
-	long cursor;
 };
 
 #endif
